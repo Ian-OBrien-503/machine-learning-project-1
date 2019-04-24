@@ -114,16 +114,11 @@ def data_test():
 
 
 def update_weights(count, z):
-    t = 0
     target = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     target[count] = 1
     for p in range(10):
-        if target[p] == outputs[p]:
-            t = 1
-        else:
-            t = 0
         for y in range(785):
-            weights[x][y] = weights[x][y] + learning_rate*(t-outputs[x])*matrix[z][y]
+            weights[p][y] = weights[p][y] + learning_rate*(target[p]-outputs[p])*matrix[p][y]
 
 
 def calc_accuracy(correct, x):
@@ -131,45 +126,33 @@ def calc_accuracy(correct, x):
     global epoch
     epoch = x
     epoch = epoch + 1
-    return (correct/59999)
+    return correct/59999
 
 
 def calc_accuracy_test(correct, x):
     print("accuracy for test set (correct/10000) at epoch", x, "=", correct/9999)
-    return(correct/9999)
+    return correct/9999
 
 
-for x in range (100):
+# run training for 70 epochs
+for x in range(70):
     test = train()
-    result = train() - test
-    if result >= -1 and result <= 1:
-        break
 
+# LOAD TEST DATA
 # load data into matrix and pre-process the data, also adding bias
 matrix = numpy.loadtxt(open('test.csv', 'rb'), delimiter=",", skiprows=1)
 for each in matrix[:, 0]:
     targets.append(each)
 matrix = matrix[:, 1:785]
+# normalize each data element between 0 and 1
 matrix = (1/255) * matrix
 n, m = matrix.shape
-X0 = numpy.ones((n,1))
+# append bias=1 for all training examples
+X0 = numpy.ones((n, 1))
 matrix = numpy.hstack((X0, matrix))
 
+# run test data after training model
 data_test()
-
-
-# load data into matrix and pre-process the data, also adding bias
-matrix = numpy.loadtxt(open('test.csv', 'rb'), delimiter=",", skiprows=1)
-for each in matrix[:, 0]:
-    targets.append(each)
-matrix = matrix[:, 1:785]
-matrix = (1/255) * matrix
-n, m = matrix.shape
-X0 = numpy.ones((n,1))
-matrix = numpy.hstack((X0, matrix))
-print(targets)
-
-
 
 
 #output to excelsheet to check data
